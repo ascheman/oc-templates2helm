@@ -161,6 +161,8 @@ description: A Helm chart for the ${chartName} application
 name: ${chartName}
 # The effective version will be computed during Helm generation
 version: 0.0.1
+# This is only added to make `helm lint` happy - configure your own icon!
+icon: http://acme.org/replaceme.jpg 
 """)
 
         }
