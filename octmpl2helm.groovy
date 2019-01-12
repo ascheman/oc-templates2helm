@@ -160,7 +160,7 @@ appVersion: "1.0"
 description: A Helm chart for the ${chartName} application
 name: ${chartName}
 # The effective version will be computed during Helm generation
-version: 0.0.0
+version: 0.0.1
 """)
 
         }
