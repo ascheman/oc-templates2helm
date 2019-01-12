@@ -190,8 +190,13 @@ version: 0.0.0
         File templatesDir = new File(chartsDir, "templates")
         templatesDir.mkdirs()
         objects.each { object ->
-            File templateFile = new File(templatesDir, "${object.kind}-${object.metadata.name}.yaml")
-            log.info("Dumping object '{}' of kind '{}' to file '{}'", object.metadata.name, object.kind, templateFile)
+            String name = object.metadata.name
+            if (name.contains ("{{")) {
+                log.warn ("Object name '{}' contains variable using chart name instead", name)
+                name = chartName
+            }
+            File templateFile = new File(templatesDir, "${object.kind}-${name}.yaml")
+            log.info("Dumping object '{}' of kind '{}' to file '{}'", name, object.kind, templateFile)
             templateFile.withPrintWriter { PrintWriter printStream ->
                 printHeader(printStream)
                 yaml.dump(object, printStream)
