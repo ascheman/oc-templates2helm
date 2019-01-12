@@ -1,0 +1,51 @@
+= Generate Helm Charts from OpenShift Templates
+
+:toc:
+
+If you plan to migrate from https://docs.openshift.com/container-platform/3.11/dev_guide/templates.html[OpenShift Deployment Templates] (OC Templates) to https://helm.sh/[Helm] charts (for OC or generic https://kubernetes.io[Kubernetes] (k8s)), this tool might be a starting point for you.
+It tries to automate much of the conversion work and can generate a first version of your Helm chart from a given Template.
+
+NOTE: You will still have to perform some manual steps to create a valid Helm chart!
+
+== Prerequisites
+
+The software is written as a http://groovy-lang.org[Groovy Script].
+You need to have a Groovy interpreter (`groovy` binary) in your execution `${PATH}` and access to the Internet to make it fetch further libraries (via http://docs.groovy-lang.org/latest/html/documentation/grape.html[Groovy Grapes]).
+
+Checkout http://docs.groovy-lang.org/latest/html/documentation/grape.html#Grape-Proxysettings[Grape proxy settings] if you have Internet access via a Proxy.
+
+== Usage
+
+Just call the script with the OpenShift Template file, e.g., `deployment-myservice.yaml`:
+
+  octmpl2helm.groovy deployment-myservices.yaml
+
+CAUTION: It will create a local directory `generated-helmcharts/` and may *override existing files* in this sub folder *without any warning*!
+
+//[source, text]
+//----
+//include::octmpl2helm.groovy[tag=usage]
+//----
+
+== Limitations
+
+The script currently only creates one chart template for each kind of OC template object it finds.
+Template variables are replaced by a corresponding Helm value.
+In particular, the script performs almost no checks if the target kind in OC or k8s is valid, with the following exceptions
+
+* `DeploymentConfig` -> `Deployment`
+
+== Issues
+
+If you run into any problems or will provide any improvments or fixes,
+
+* try to contact me via the https://kubernetes.slack.com[k8s slack],
+* raise an issue at https://github.com/ascheman/oc-templates2helm/issues[] (No maintenance guaranteed)
+* or, even better: Send a pull request :-)
+
+== License
+
+[source, text]
+----
+include::LICENSE.txt[]
+----
