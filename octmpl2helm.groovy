@@ -93,6 +93,14 @@ public class TemplateTransformer {
         }
     }
 
+    private def _replaceParameters(Integer object) {
+        return object
+    }
+
+    private def _replaceParameters(Boolean object) {
+        return object
+    }
+
     private def _replaceParameters(String object) {
         String[] matches = Regex.match(object, "/\\\$(\\{*)([A-Z_]+)(\\}*)/g")
         if (matches) {
