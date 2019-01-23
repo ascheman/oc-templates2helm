@@ -2,8 +2,15 @@
 
 :toc:
 
-If you plan to migrate from https://docs.openshift.com/container-platform/3.11/dev_guide/templates.html[OpenShift Deployment Templates] (OC Templates) to https://helm.sh/[Helm] charts (for OC or generic https://kubernetes.io[Kubernetes] (k8s)), this tool might be a starting point for you.
-It tries to automate much of the conversion work and can generate a first version of your Helm chart from a given Template.
+https://docs.openshift.com/container-platform/3.11/dev_guide/templates.html[OpenShift Deployment Templates] (OC Templates) are one way to create a Deployment blueprint for all https://kubernetes.io[Kubernetes] (k8s) objects of your application.
+The OC Templates can use free variables which are replaced during deployment, e.g., based on Environment settings.
+Native k8s does not have such a mechanism, you only can send the object definitions (YAML or JSON) directly to the API-Server.
+There are several solutions to provide a Templating engine for k8s as well.
+https://helm.sh/[Helm] charts seem to becoming a de-facto standard for k8s in that area.
+Helm is sometimes attributed as _the package manager_ for k8s (similar to Debian packages or RPM in the Linux world), or _the https://brew.sh/[Homebrew]_ for k8s.
+
+If you plan to migrate from OC Templates to Helm (for OC or generic Kubernetes), this tool might be a starting point for you.
+It tries to automate much of the conversion work and can generate a first version of your Helm chart from a given OC Template.
 
 NOTE: You will still have to perform some manual steps to create a valid Helm chart!
 
@@ -12,7 +19,7 @@ NOTE: You will still have to perform some manual steps to create a valid Helm ch
 The software is written as a http://groovy-lang.org[Groovy Script].
 You need to have a Groovy interpreter (`groovy` binary) in your execution `${PATH}` and access to the Internet to make it fetch further libraries (via http://docs.groovy-lang.org/latest/html/documentation/grape.html[Groovy Grapes]).
 
-Checkout http://docs.groovy-lang.org/latest/html/documentation/grape.html#Grape-Proxysettings[Grape proxy settings] if you have Internet access via a Proxy.
+Checkout http://docs.groovy-lang.org/latest/html/documentation/grape.html#Grape-Proxysettings[Grape proxy settings] if you have Internet access via a Proxy (e.g., set `JAVA_OPTS="-Dhttps.proxyHost=localhost -Dhttps.proxyPort=3128"` for a local CNTLM proxy).
 
 == Usage
 
