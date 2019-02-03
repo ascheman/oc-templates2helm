@@ -142,8 +142,8 @@ public class TemplateTransformer {
         return object
     }
 
-    private printHeader(PrintWriter printStream) {
-        printStream.println("""# This file is generated automatically - edit with care!
+    private printHeader(PrintWriter printWriter) {
+        printWriter.println("""# This file is generated automatically - edit with care!
 # Generation date ${new Date()}
 # Cf. https://github.com/ascheman/oc-templates2helm.git for generator details
 """)
@@ -204,12 +204,12 @@ icon: http://acme.org/replaceme.jpg
         kinds.each {String kind, List objects ->
             File templateFile = new File(templatesDir, "${kind.toCharArray()}.yaml")
             log.info("Dumping #${objects.size()} objects of kind '{}' to file '{}'", kind, templateFile)
-            templateFile.withPrintWriter { PrintWriter printStream ->
-                printHeader(printStream)
-                yaml.dump(objects[0], printStream)
+            templateFile.withPrintWriter { PrintWriter printWriter ->
+                printHeader(printWriter)
+                yaml.dump(objects[0], printWriter)
                 (1..objects.size() - 1).each {int objectNo ->
-                    printStream.println("---")
-                    yaml.dump(objects[objectNo], printStream)
+                    printWriter.println("---")
+                    yaml.dump(objects[objectNo], printWriter)
                 }
             }
         }
