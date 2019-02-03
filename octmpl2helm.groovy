@@ -191,17 +191,26 @@ icon: http://acme.org/replaceme.jpg
     private void dumpTemplates(File chartsDir) {
         File templatesDir = new File(chartsDir, "templates")
         templatesDir.mkdirs()
+        // Sometimes there is more than one object of a kind
+        Map<String, List> kinds = [:]
         objects.each { object ->
-            String name = object.metadata.name
-            if (name.contains ("{{")) {
-                log.warn ("Object name '{}' contains variable using chart name instead", name)
-                name = chartName
+            String kind = object.kind
+            if (kinds[kind]) {
+                kinds[kind].add(object)
+            } else {
+                kinds[kind] = [object]
             }
-            File templateFile = new File(templatesDir, "${object.kind}-${name}.yaml")
-            log.info("Dumping object '{}' of kind '{}' to file '{}'", name, object.kind, templateFile)
+        }
+        kinds.each {String kind, List objects ->
+            File templateFile = new File(templatesDir, "${kind.toCharArray()}.yaml")
+            log.info("Dumping #${objects.size()} objects of kind '{}' to file '{}'", kind, templateFile)
             templateFile.withPrintWriter { PrintWriter printStream ->
                 printHeader(printStream)
-                yaml.dump(object, printStream)
+                yaml.dump(objects[0], printStream)
+                (1..objects.size() - 1).each {int objectNo ->
+                    printStream.println("---")
+                    yaml.dump(objects[objectNo], printStream)
+                }
             }
         }
     }
