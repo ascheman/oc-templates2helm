@@ -10,7 +10,7 @@
 @Grab("org.slf4j:slf4j-simple:1.7.25")
 @Grab("org.yaml:snakeyaml:1.23")
 
-void printUsageAndExit (int exitCode = 0, PrintStream out = System.out) {
+void printUsageAndExit(int exitCode = 0, PrintStream out = System.out) {
     String usage =
 // tag::usage1[]
             """
@@ -22,8 +22,8 @@ of them based on the basename of the file.
 """
 // end::usage[]
 
-    out.println (usage.replaceAll (/\/\/.*\n/, ''))
-    System.exit (exitCode)
+    out.println(usage.replaceAll(/\/\/.*\n/, ''))
+    System.exit(exitCode)
 }
 
 import groovy.util.logging.Slf4j
@@ -42,7 +42,7 @@ public class TemplateTransformer {
     String chartName
 
     public TemplateTransformer(String inputFilename) {
-        log.info ("Loading OC Template '{}'", inputFilename)
+        log.info("Loading OC Template '{}'", inputFilename)
         DumperOptions options = new DumperOptions()
         options.setPrettyFlow(true)
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK)
@@ -62,17 +62,16 @@ public class TemplateTransformer {
         }
 
         // Read parameters into hash for later replacement
-        template.parameters.each {
-            templateParameter ->
-                parameter[templateParameter.name] = templateParameter
+        template.parameters.each { templateParameter ->
+            parameter[templateParameter.name] = templateParameter
         }
         objects = template.objects
     }
 
     public void fixKinds() {
-        objects.each {object ->
+        objects.each { object ->
             if (object.kind == "DeploymentConfig") {
-                log.info ("Changing DeploymentConfig -> Deployment for '{}'", object.metadata.name)
+                log.info("Changing DeploymentConfig -> Deployment for '{}'", object.metadata.name)
                 object.kind = "Deployment"
                 object.apiVersion = "apps/v1"
             }
@@ -85,7 +84,7 @@ public class TemplateTransformer {
 
     private void createReplacementIfNecessary(String variableName) {
         if (!parameter[variableName].replacement) {
-            String replacement = variableName.toLowerCase().replaceAll(/_([a-z0-9])/) {letters ->
+            String replacement = variableName.toLowerCase().replaceAll(/_([a-z0-9])/) { letters ->
                 letters[1].toUpperCase()
             }
             log.info("${variableName} -> ${replacement}")
@@ -201,13 +200,13 @@ icon: http://acme.org/replaceme.jpg
                 kinds[kind] = [object]
             }
         }
-        kinds.each {String kind, List objects ->
+        kinds.each { String kind, List objects ->
             File templateFile = new File(templatesDir, "${kind.toCharArray()}.yaml")
             log.info("Dumping #${objects.size()} objects of kind '{}' to file '{}'", kind, templateFile)
             templateFile.withPrintWriter { PrintWriter printWriter ->
                 printHeader(printWriter)
                 yaml.dump(objects[0], printWriter)
-                (1..objects.size() - 1).each {int objectNo ->
+                (1..objects.size() - 1).each { int objectNo ->
                     printWriter.println("---")
                     yaml.dump(objects[objectNo], printWriter)
                 }
