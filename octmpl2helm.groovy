@@ -41,6 +41,28 @@ public class TemplateTransformer {
     HashMap parameter = [:]
     String chartName
 
+    private mergeInValues(String dirName, String fileName) {
+        File propertiesFile = new File(dirName, fileName)
+        log.debug("Checking for properties file '${propertiesFile}'")
+        Properties properties = new Properties()
+        if (propertiesFile.exists()) {
+            properties.load(new FileInputStream(propertiesFile))
+
+            parameter.each { String key, Map templateParameter ->
+                if (properties[templateParameter.name]) {
+                    if (templateParameter.value) {
+                        log.warn("Not overriding value '{}' with current content '{}' with new value '{}' from '{}'",
+                                templateParameter.name, templateParameter.value,
+                                properties[templateParameter.name], propertiesFile)
+                    } else {
+                        templateParameter.value = properties[templateParameter.name]
+                    }
+                }
+            }
+        }
+
+    }
+
     public TemplateTransformer(String inputFilename) {
         log.info("Loading OC Template '{}'", inputFilename)
         DumperOptions options = new DumperOptions()
@@ -65,6 +87,10 @@ public class TemplateTransformer {
         template.parameters.each { templateParameter ->
             parameter[templateParameter.name] = templateParameter
         }
+        String dirName = input.parent
+        mergeInValues(dirName, "${chartName}.properties")
+        mergeInValues(dirName, "${chartName}-common.properties")
+
         objects = template.objects
     }
 
@@ -135,6 +161,9 @@ public class TemplateTransformer {
     }
 
     private def _replaceParameters(Collection object) {
+        if (!object) {
+            return
+        }
         for (int i = 0; i < object.size(); i++) {
             object[i] = _replaceParameters(object[i])
         }
@@ -167,21 +196,36 @@ icon: http://acme.org/replaceme.jpg
         }
     }
 
+    private printValuesTemplateHeader(PrintWriter printWriter) {
+        printWriter.println("""# This file is generated automatically - DO NOT EDIT - Use it as template for your value overrides in different environments
+# Generation date ${new Date()}
+# Cf. https://github.com/ascheman/oc-templates2helm.git for generator details
+""")
+    }
+
     private void dumpValues(File chartsDir) {
         File valuesFile = new File(chartsDir, "values.yaml")
+        File valuesTemplateFile = new File(chartsDir, "values-template.yaml")
         log.info("Dumping values for '{}' to '{}'", chartName, valuesFile)
 
-        valuesFile.withPrintWriter { PrintWriter printWriter ->
-            printHeader(printWriter)
-            parameter.keySet().sort().each { String paramName ->
-                if (parameter[paramName].description) {
-                    printWriter.println("# ${parameter[paramName].description}")
-                }
-                if (parameter[paramName].replacement) {
-                    printWriter.println("${parameter[paramName].replacement}: ${parameter[paramName].value ?: '# TO_BE_REPLACED'}")
-                } else {
-                    log.warn("Parameter '{}' was never used?", paramName)
-                    printWriter.println("# Variable '${paramName}' was never used")
+        valuesTemplateFile.withPrintWriter { PrintWriter valueTemplatePrintWriter ->
+            printValuesTemplateHeader(valueTemplatePrintWriter)
+            valuesFile.withPrintWriter { PrintWriter valuesPrintWriter ->
+                printHeader(valuesPrintWriter)
+                parameter.keySet().sort().each { String paramName ->
+                    if (parameter[paramName].description) {
+                        valuesPrintWriter.println("# ${parameter[paramName].description}")
+                    }
+                    if (parameter[paramName].replacement) {
+                        valuesPrintWriter.println("${parameter[paramName].replacement}: ${parameter[paramName].value ?: '# TO_BE_REPLACED'}")
+                        if (!parameter[paramName].value) {
+                            valueTemplatePrintWriter.println("# ${parameter[paramName].description}")
+                            valueTemplatePrintWriter.println("${parameter[paramName].replacement}: # Insert environment specific value here")
+                        }
+                    } else {
+                        log.warn("Parameter '{}' was never used?", paramName)
+                        valuesPrintWriter.println("# Variable '${paramName}' was never used")
+                    }
                 }
             }
         }
