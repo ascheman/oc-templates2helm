@@ -104,6 +104,9 @@ public class TemplateTransformer {
                     log.info("Changing Update strategy for '{}'", object.metadata.name)
                     object.spec.strategy.type = "RollingUpdate"
             }
+            } else if (object.kind == "Route") {
+                log.info("Changing apiVersion for '{}'", object.metadata.name)
+                object.apiVersion = "route.openshift.io/v1"
         }
     }
 
