@@ -100,6 +100,9 @@ public class TemplateTransformer {
                 log.info("Changing DeploymentConfig -> Deployment for '{}'", object.metadata.name)
                 object.kind = "Deployment"
                 object.apiVersion = "apps/v1"
+                if (object?.spec?.strategy?.type == "Rolling") {
+                    log.info("Changing Update strategy for '{}'", object.metadata.name)
+                    object.spec.strategy.type = "RollingUpdate"
             }
         }
     }
