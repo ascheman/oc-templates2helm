@@ -194,21 +194,22 @@ icon: http://acme.org/replaceme.jpg
         Map<String, List> kinds = [:]
         objects.each { object ->
             String kind = object.kind
-            if (kinds[kind]) {
-                kinds[kind].add(object)
-            } else {
-                kinds[kind] = [object]
+            if (!kinds[kind]) {
+                kinds[kind] = new ArrayList()
             }
+            kinds[kind].add(object)
         }
         kinds.each { String kind, List objects ->
-            File templateFile = new File(templatesDir, "${kind.toCharArray()}.yaml")
-            log.info("Dumping #${objects.size()} objects of kind '{}' to file '{}'", kind, templateFile)
-            templateFile.withPrintWriter { PrintWriter printWriter ->
-                printHeader(printWriter)
-                yaml.dump(objects[0], printWriter)
-                (1..objects.size() - 1).each { int objectNo ->
-                    printWriter.println("---")
-                    yaml.dump(objects[objectNo], printWriter)
+            if (kind) {
+                File templateFile = new File(templatesDir, "${kind.toCharArray()}.yaml")
+                log.info("Dumping #${objects.size()} objects of kind '{}' to file '{}'", kind, templateFile)
+                templateFile.withPrintWriter { PrintWriter printWriter ->
+                    printHeader(printWriter)
+                    yaml.dump(objects[0], printWriter)
+                    for (int objectNo = 1; objectNo < objects.size(); objectNo++) {
+                        printWriter.println("---")
+                        yaml.dump(objects[objectNo], printWriter)
+                    }
                 }
             }
         }
