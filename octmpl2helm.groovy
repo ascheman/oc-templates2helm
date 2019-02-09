@@ -213,6 +213,16 @@ icon: http://acme.org/replaceme.jpg
         }
     }
 
+    private String dumpValue(def value) {
+        if (value instanceof Boolean || value instanceof Number) {
+            return value
+        } else if (value.startsWith("\"") || value.startsWith("'")) {
+            return value
+        } else {
+            return "\"${value}\""
+        }
+    }
+
     private printValuesTemplateHeader(PrintWriter printWriter) {
         printWriter.println("""# This file is generated automatically - DO NOT EDIT - Use it as template for your value overrides in different environments
 # Generation date ${new Date()}
@@ -234,8 +244,10 @@ icon: http://acme.org/replaceme.jpg
                         valuesPrintWriter.println("# ${parameter[paramName].description}")
                     }
                     if (parameter[paramName].replacement) {
-                        valuesPrintWriter.println("${parameter[paramName].replacement}: ${parameter[paramName].value ?: '# TO_BE_REPLACED'}")
-                        if (!parameter[paramName].value) {
+                        if (parameter[paramName].value) {
+                            valuesPrintWriter.println("${parameter[paramName].replacement}: ${dumpValue parameter[paramName].value}")
+                        } else {
+                            valuesPrintWriter.println("${parameter[paramName].replacement}: ' # TO_BE_REPLACED '")
                             valueTemplatePrintWriter.println("# ${parameter[paramName].description}")
                             valueTemplatePrintWriter.println("${parameter[paramName].replacement}: # Insert environment specific value here")
                         }
