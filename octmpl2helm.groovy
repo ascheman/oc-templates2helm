@@ -103,7 +103,13 @@ public class TemplateTransformer {
                 if (object?.spec?.strategy?.type == "Rolling") {
                     log.info("Changing Update strategy for '{}'", object.metadata.name)
                     object.spec.strategy.type = "RollingUpdate"
-            }
+                    object.spec.strategy.rollingUpdate = [
+                            maxSurge: object.spec.strategy.rollingParams.maxSurge,
+                            maxUnavailable: object.spec.strategy.rollingParams.maxUnavailable,
+                    ]
+                    object.spec.strategy.remove("rollingParams")
+                    object.spec.remove("triggers")
+                }
             } else if (object.kind == "Route") {
                 log.info("Changing apiVersion for '{}'", object.metadata.name)
                 object.apiVersion = "route.openshift.io/v1"
