@@ -288,7 +288,7 @@ icon: http://acme.org/replaceme.jpg
         }
     }
 
-    public void dump(String targetDirname = "generated-helmcharts") {
+    public void dump(String targetDirname = "generated-charts") {
         File targetDir = new File(targetDirname)
         File chartsDir = new File(targetDir, chartName)
         chartsDir.mkdirs()

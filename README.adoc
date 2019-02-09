@@ -27,7 +27,7 @@ Just call the script with the OpenShift Template file, e.g., `deployment-myservi
 
   octmpl2helm.groovy deployment-myservices.yaml
 
-CAUTION: It will create a local directory `generated-helmcharts/` and may *override existing files* in this sub folder *without any warning*!
+CAUTION: It will create a local directory `generated-charts/` and may *override existing files* in this sub folder *without any warning*!
 
 //[source, text]
 //----
