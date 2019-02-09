@@ -113,6 +113,11 @@ public class TemplateTransformer {
             } else if (object.kind == "Route") {
                 log.info("Changing apiVersion for '{}'", object.metadata.name)
                 object.apiVersion = "route.openshift.io/v1"
+            } else if (object.kind == "CronJob") {
+                log.info("Changing apiVersion for '{}'", object.metadata.name)
+                object.apiVersion = "batch/v1beta1"
+            }
+        }
         }
     }
 
