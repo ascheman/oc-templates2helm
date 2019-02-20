@@ -240,20 +240,24 @@ icon: http://acme.org/replaceme.jpg
             valuesFile.withPrintWriter { PrintWriter valuesPrintWriter ->
                 printHeader(valuesPrintWriter)
                 parameter.keySet().sort().each { String paramName ->
-                    if (parameter[paramName].description) {
-                        valuesPrintWriter.println("# ${parameter[paramName].description}")
-                    }
-                    if (parameter[paramName].replacement) {
-                        if (parameter[paramName].value) {
-                            valuesPrintWriter.println("${parameter[paramName].replacement}: ${dumpValue parameter[paramName].value}")
-                        } else {
-                            valuesPrintWriter.println("${parameter[paramName].replacement}: ' # TO_BE_REPLACED '")
-                            valueTemplatePrintWriter.println("# ${parameter[paramName].description}")
-                            valueTemplatePrintWriter.println("${parameter[paramName].replacement}: # Insert environment specific value here")
-                        }
+                    if (parameter[paramName]?.disabled) {
+                        log.debug("Not dumping value for '{}'", paramName)
                     } else {
-                        log.warn("Parameter '{}' was never used?", paramName)
-                        valuesPrintWriter.println("# Variable '${paramName}' was never used")
+                        if (parameter[paramName].description) {
+                            valuesPrintWriter.println("# ${parameter[paramName].description}")
+                        }
+                        if (parameter[paramName].replacement) {
+                            if (parameter[paramName].value) {
+                                valuesPrintWriter.println("${parameter[paramName].replacement}: ${dumpValue parameter[paramName].value}")
+                            } else {
+                                valuesPrintWriter.println("${parameter[paramName].replacement}: ' # TO_BE_REPLACED '")
+                                valueTemplatePrintWriter.println("# ${parameter[paramName].description}")
+                                valueTemplatePrintWriter.println("${parameter[paramName].replacement}: # Insert environment specific value here")
+                            }
+                        } else {
+                            log.warn("Parameter '{}' was never used?", paramName)
+                            valuesPrintWriter.println("# Variable '${paramName}' was never used")
+                        }
                     }
                 }
             }
