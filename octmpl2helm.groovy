@@ -12,15 +12,15 @@
 
 void printUsageAndExit(int exitCode = 0, PrintStream out = System.out) {
     String usage =
-// tag::usage1[]
             """
+// tag::usage[]
 usage: octmpl2helm -h | template.yaml+
 
 Provide one or more OpenShift Deployment template files.
 The script will generate a Helm chart directory for each
 of them based on the basename of the file.
-"""
 // end::usage[]
+"""
 
     out.println(usage.replaceAll(/\/\/.*\n/, ''))
     System.exit(exitCode)
