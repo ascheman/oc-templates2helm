@@ -75,7 +75,7 @@ public class TemplateTransformer {
 
         File input = new File(inputFilename)
         chartName = FilenameUtils.getBaseName(inputFilename)
-        def template = yaml.load(new FileInputStream(input))
+        Object template = yaml.load(new FileInputStream(input))
 
         if (!template?.kind?.equals("Template")) {
             throw new IllegalArgumentException("Cannot transform kind '${template?.kind}' from input file '${inputFilename}")
@@ -134,15 +134,15 @@ public class TemplateTransformer {
         }
     }
 
-    private def _replaceParameters(Integer object) {
+    private Object _replaceParameters(Integer object) {
         return object
     }
 
-    private def _replaceParameters(Boolean object) {
+    private Object _replaceParameters(Boolean object) {
         return object
     }
 
-    private def _replaceParameters(String object) {
+    private Object _replaceParameters(String object) {
         String[] matches = Regex.match(object, "/\\\$(\\{*)([A-Z_]+)(\\}*)/g")
         if (matches) {
             if (matches.length % 3 != 0) {
@@ -169,14 +169,14 @@ public class TemplateTransformer {
         return object
     }
 
-    private def _replaceParameters(Map object) {
+    private Object _replaceParameters(Map object) {
         object.each { key, value ->
             object[key] = _replaceParameters(value)
         }
         return object
     }
 
-    private def _replaceParameters(Collection object) {
+    private Object _replaceParameters(Collection object) {
         if (!object) {
             return
         }
@@ -212,7 +212,7 @@ icon: http://acme.org/replaceme.jpg
         }
     }
 
-    private String dumpValue(def value) {
+    private String dumpValue(Object value) {
         if (value instanceof Boolean || value instanceof Number) {
             return value
         } else if (value.startsWith("\"") || value.startsWith("'")) {
