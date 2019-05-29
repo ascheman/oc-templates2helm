@@ -118,7 +118,6 @@ public class TemplateTransformer {
                 object.apiVersion = "batch/v1beta1"
             }
         }
-        }
     }
 
     public void replaceParameters() {
