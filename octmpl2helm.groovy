@@ -38,7 +38,7 @@ public class TemplateTransformer {
     Yaml yaml
 
     Collection objects
-    HashMap parameter = [:]
+    Map parameter = [:]
     String chartName
 
     private mergeInValues(String dirName, String fileName) {
@@ -169,7 +169,7 @@ public class TemplateTransformer {
         return object
     }
 
-    private def _replaceParameters(HashMap object) {
+    private def _replaceParameters(Map object) {
         object.each { key, value ->
             object[key] = _replaceParameters(value)
         }
